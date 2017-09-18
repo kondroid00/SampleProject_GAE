@@ -52,7 +52,7 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	authModel := model.NewAuthModel(&ctx)
-	token, err := authModel.CreateToken()
+	token, err := authModel.CreateToken(user.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

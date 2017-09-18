@@ -22,7 +22,7 @@ func NewUsersModel(ctx *context.Context) *UsersModel {
 	}
 }
 
-func (u *UsersModel) Login(userId string) (*dto.User, error) {
+func (u *UsersModel) FetchUser(userId string) (*dto.User, error) {
 	g := goon.FromContext(u.Ctx)
 
 	user := &dto.User{
@@ -36,12 +36,12 @@ func (u *UsersModel) Login(userId string) (*dto.User, error) {
 	return user, nil
 }
 
-func (u *UsersModel) FetchUsers() ([]dto.User, error) {
+func (u *UsersModel) FetchUsers() ([]*dto.User, error) {
 	g := goon.FromContext(u.Ctx)
 
 	q := datastore.NewQuery(u.kind).Limit(10)
 
-	users := make([]dto.User, 0, 10)
+	users := make([]*dto.User, 0, 10)
 	if _, err := g.GetAll(q, &users); err != nil {
 		return nil, err
 	}

@@ -30,10 +30,11 @@ func NewAuthModel(ctx *context.Context) *AuthModel {
 	}
 }
 
-func (u *AuthModel) CreateToken() (*dto.Token, error) {
+func (u *AuthModel) CreateToken(userId string) (*dto.Token, error) {
 	g := goon.FromContext(u.Ctx)
 
 	t := u.createToken()
+	t.UserId = userId
 
 	log.Debugf(u.Ctx, ("token uuid = " + t.Token))
 	_, err := g.Put(t)
@@ -43,7 +44,7 @@ func (u *AuthModel) CreateToken() (*dto.Token, error) {
 	return t, nil
 }
 
-func (u *AuthModel) verify(token string) VerifyResult {
+func (u *AuthModel) Verify(token string) (VerifyResult, *dto.Token) {
 	g := goon.FromContext(u.Ctx)
 
 	t := &dto.Token{
@@ -51,16 +52,16 @@ func (u *AuthModel) verify(token string) VerifyResult {
 	}
 
 	if err := g.Get(t); err != nil {
-		return VERIFY_NOT_FOUND
+		return VERIFY_NOT_FOUND, nil
 	}
 
 	if t.ExpiredAt < time.Now().UnixNano() {
-		return VERIFY_EXPIRED
+		return VERIFY_EXPIRED, nil
 	} else {
-		return VERIFY_OK
+		return VERIFY_OK, t
 	}
 
-	return VERIFY_NOT_FOUND
+	return VERIFY_NOT_FOUND, nil
 }
 
 func (u *AuthModel) createToken() *dto.Token {

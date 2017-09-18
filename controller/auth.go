@@ -12,9 +12,7 @@ import (
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
-	usersModel := &model.UsersModel{
-		Ctx: ctx,
-	}
+	usersModel := model.NewUsersModel(&ctx)
 	log.Debugf(ctx, ("login = "))
 
 	params := &struct {
@@ -25,7 +23,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	user, err := usersModel.Login(params.UserId)
+	user, err := usersModel.FetchUser(params.UserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 	}
@@ -33,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	authModel := &model.AuthModel{
 		Ctx: ctx,
 	}
-	token, err := authModel.CreateToken()
+	token, err := authModel.CreateToken(user.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

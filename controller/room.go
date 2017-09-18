@@ -13,6 +13,14 @@ import (
 
 func RoomIndex(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
+
+	currentUser := checkToken(w, r)
+	if currentUser != nil {
+		log.Debugf(ctx, "currentUser = %s", currentUser.Id)
+	} else {
+		log.Debugf(ctx, "currentUser = nil")
+	}
+
 	roomsModel := model.NewRoomsModel(&ctx)
 
 	rooms, err := roomsModel.FetchRooms()
