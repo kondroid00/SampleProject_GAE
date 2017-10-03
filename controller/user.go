@@ -34,6 +34,8 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		Name string `json:"name"`
 	}{}
 
+	//log.Debugf(ctx, "body = %s", helper.GetBodyParamString(r))
+
 	if err := json.NewDecoder(r.Body).Decode(params); err != nil {
 		log.Debugf(ctx, "decode error")
 		log.Debugf(ctx, "%s", err)
